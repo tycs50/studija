@@ -1,10 +1,3 @@
-//
-//  studijaUITestsLaunchTests.swift
-//  studijaUITests
-//
-//  Created by Yefim on 26.06.26.
-//
-
 import XCTest
 
 final class studijaUITestsLaunchTests: XCTestCase {

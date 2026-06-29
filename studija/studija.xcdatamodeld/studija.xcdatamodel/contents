@@ -1,9 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="false" userDefinedModelVersionIdentifier="">
-    <entity name="Item" representedClassName="Item" syncable="YES" codeGenerationType="class">
-        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="25C56" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Schedule" representedClassName="Schedule" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <relationship name="weeks" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Week" inverseName="schedule" inverseEntity="Week"/>
     </entity>
-    <elements>
-        <element name="Item" positionX="-63" positionY="-18" width="128" height="44"/>
-    </elements>
+    <entity name="Subject" representedClassName="Subject" syncable="YES" codeGenerationType="class">
+        <attribute name="color" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <relationship name="tasks" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Task" inverseName="subject" inverseEntity="Task"/>
+        <relationship name="weekSubjects" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="WeekSubject" inverseName="subject" inverseEntity="WeekSubject"/>
+    </entity>
+    <entity name="Task" representedClassName="Task" syncable="YES" codeGenerationType="class">
+        <attribute name="body" optional="YES" attributeType="String"/>
+        <attribute name="deadline" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="priority" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <relationship name="subject" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Subject" inverseName="tasks" inverseEntity="Subject"/>
+    </entity>
+    <entity name="Week" representedClassName="Week" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="weekIndex" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="schedule" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Schedule" inverseName="weeks" inverseEntity="Schedule"/>
+        <relationship name="subjects" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="WeekSubject" inverseName="week" inverseEntity="WeekSubject"/>
+    </entity>
+    <entity name="WeekSubject" representedClassName="WeekSubject" syncable="YES" codeGenerationType="class">
+        <attribute name="classroom" optional="YES" attributeType="String"/>
+        <attribute name="endTime" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="startTime" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="teacher" optional="YES" attributeType="String"/>
+        <attribute name="weekday" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="subject" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Subject" inverseName="weekSubjects" inverseEntity="Subject"/>
+        <relationship name="week" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Week" inverseName="subjects" inverseEntity="Week"/>
+    </entity>
 </model>

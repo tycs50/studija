@@ -1,10 +1,3 @@
-//
-//  studijaTests.swift
-//  studijaTests
-//
-//  Created by Yefim on 26.06.26.
-//
-
 import Testing
 @testable import studija
 
