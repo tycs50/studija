@@ -24,12 +24,15 @@ struct WeekSubjectView: View {
 
             VStack(spacing: 0) {
                 ScrollView {
-                    VStack(spacing: 14) {
+                    VStack(alignment: .leading, spacing: 14) {
                         subjectSelectorSection
+
+                        SubjectTypeSelection(viewModel: viewModel)
+                            .padding(.horizontal, -20)
 
                         timeSelectionRow
 
-                        inputField(placeholder: "Building, classroom", text: $viewModel.classroom, icon: "mappin")
+                        inputField(placeholder: "Building, classroom", text: $viewModel.classroom, icon: "map")
 
                         inputField(placeholder: "Teacher", text: $viewModel.teacher, icon: "graduationcap")
 
@@ -89,7 +92,7 @@ struct WeekSubjectView: View {
                 } else {
                     HStack {
                         Spacer()
-                        Text("Click to select a subject")
+                        Text("Select Subject")
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(.white.opacity(0.7))
                         Spacer()

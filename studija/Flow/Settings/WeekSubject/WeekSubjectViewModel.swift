@@ -11,6 +11,7 @@ class WeekSubjectViewModel {
     var endTime = Date()
     var classroom: String = ""
     var teacher: String = ""
+    var selectedType: SubjectType? = nil
 
     var isStartTimeSet = false
     var isEndTimeSet = false
@@ -19,9 +20,22 @@ class WeekSubjectViewModel {
         selectedSubject == nil || !isStartTimeSet || !isEndTimeSet
     }
 
+    var customTypes: [SubjectType] = [] {
+        didSet {
+            if let encoded = try? JSONEncoder().encode(customTypes) {
+                UserDefaults.standard.set(encoded, forKey: "custom_subject_types")
+            }
+        }
+    }
+
     init(weekSubject: WeekSubject? = nil, weekday: Int? = nil) {
         self.weekSubject = weekSubject
         self.weekday = weekday
+
+        if let data = UserDefaults.standard.data(forKey: "custom_subject_types"),
+           let decoded = try? JSONDecoder().decode([SubjectType].self, from: data) {
+            self.customTypes = decoded
+        }
 
         if let weekSubject = weekSubject {
 
@@ -36,6 +50,12 @@ class WeekSubjectViewModel {
             self.isEndTimeSet = true
 
             self.weekday = Int(weekSubject.weekday)
+
+            if let name = weekSubject.typeName,
+               let icon = weekSubject.typeIcon,
+               let hex = weekSubject.typeColorHex {
+                self.selectedType = SubjectType(name: name, iconName: icon, colorHex: hex)
+            }
         } else {
             self.weekday = weekday
         }
@@ -57,6 +77,16 @@ class WeekSubjectViewModel {
         object.endAsDate = endTime
 
         object.weekday = Int16(weekday ?? 0)
+
+        if let type = selectedType {
+            object.typeName = type.name
+            object.typeIcon = type.iconName
+            object.typeColorHex = type.colorHex
+        } else {
+            object.typeName = nil
+            object.typeIcon = nil
+            object.typeColorHex = nil
+        }
 
         try? context.save()
     }

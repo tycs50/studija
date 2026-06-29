@@ -36,4 +36,20 @@ extension WeekSubject {
         let minutes = endTime % 60
         return String(format: "%02d:%02d", hours, minutes)
     }
+
+    var subjectType: SubjectType? {
+        get {
+            guard let name = self.typeName,
+                  let icon = self.typeIcon,
+                  let hex = self.typeColorHex else {
+                return nil
+            }
+            return SubjectType(name: name, iconName: icon, colorHex: hex)
+        }
+        set {
+            self.typeName = newValue?.name
+            self.typeIcon = newValue?.iconName
+            self.typeColorHex = newValue?.colorHex
+        }
+    }
 }

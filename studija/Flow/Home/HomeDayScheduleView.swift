@@ -3,15 +3,39 @@ import CoreData
 
 struct HomeDayScheduleView: View {
     let date: Date
-    let allWeekSubjects: [WeekSubject]
-    let allWeeks: [Week]
     let viewModel: HomeViewModel
     @Binding var navPath: NavigationPath
 
     @Environment(ScheduleManager.self) private var manager
+    @FetchRequest private var classes: FetchedResults<WeekSubject>
+
+    init(date: Date, manager: ScheduleManager, allWeeks: [Week], viewModel: HomeViewModel, navPath: Binding<NavigationPath>) {
+        self.date = date
+        self.viewModel = viewModel
+        self._navPath = navPath
+
+        let calendar = Calendar.current
+        let weekday = (calendar.component(.weekday, from: date) + 5) % 7
+
+        if let targetWeek = viewModel.activeWeek(for: date, manager: manager, allWeeks: allWeeks),
+           let weekID = targetWeek.id {
+            let predicate = NSPredicate(format: "weekday == %d AND week.id == %@", Int16(weekday), weekID as NSUUID)
+
+            self._classes = FetchRequest<WeekSubject>(
+                sortDescriptors: [NSSortDescriptor(keyPath: \WeekSubject.startTime, ascending: true)],
+                predicate: predicate,
+                animation: .default
+            )
+        } else {
+            self._classes = FetchRequest<WeekSubject>(
+                sortDescriptors: [],
+                predicate: NSPredicate(value: false),
+                animation: .default
+            )
+        }
+    }
 
     var body: some View {
-        let classes = viewModel.classes(for: date, allWeekSubjects: allWeekSubjects, manager: manager, allWeeks: allWeeks)
         let firstStart = classes.first?.formattedStartTime
 
         ScrollView {
@@ -20,21 +44,6 @@ struct HomeDayScheduleView: View {
                     statCard(title: "Classes", value: "\(classes.count)")
                     statCard(title: "Start", value: firstStart ?? "—")
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 14)
-
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.white.opacity(0.35))
-                    Text("Search")
-                        .foregroundColor(.white.opacity(0.35))
-                        .font(.system(size: 16))
-                    Spacer()
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 13)
-                .background(Color(white: 0.11))
-                .cornerRadius(14)
                 .padding(.horizontal, 20)
                 .padding(.bottom, 14)
 
@@ -58,6 +67,7 @@ struct HomeDayScheduleView: View {
                 }
             }
             .padding(.top, 2)
+            .padding(.bottom, 100)
         }
     }
 
