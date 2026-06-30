@@ -21,8 +21,10 @@ struct SubjectList: View {
         ZStack {
             Color.black.ignoresSafeArea()
 
-            VStack(spacing: 20) {
-                ScrollView {
+            ScrollView {
+                VStack(spacing: 12) {
+                    SearchField(searchText: $searchText)
+
                     if filteredSubjects.isEmpty {
                         EmptyListView(text: "No subjects")
                     } else {
@@ -33,11 +35,11 @@ struct SubjectList: View {
                                 })
                             }
                         }
-                        .padding(.horizontal, 16)
                     }
-                }.searchable(text: $searchText,
-                             placement: .navigationBarDrawer(displayMode: .always),
-                             prompt: Text("Search"))
+                }.padding(.horizontal, 16)
+                //                .searchable(text: $searchText,
+                //                            placement: .navigationBarDrawer(displayMode: .always),
+                //                            prompt: Text("Search"))
             }
         }
         .navigationTitle(Text("Subjects"))

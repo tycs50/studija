@@ -7,6 +7,8 @@ enum AppPaths: Hashable {
     case scheduleList
     case subjectList(context: SubjectSelectionContext?)
     case classesTypesList
+    case taskEditor(_ task: Task?)
+    case completedTasks
 
     var route: String {
         switch self {
@@ -16,6 +18,8 @@ enum AppPaths: Hashable {
         case .scheduleList: "schedule_list"
         case .subjectList: "subject_list"
         case .classesTypesList: "classes_types_list"
+        case .taskEditor: "task_editor"
+        case .completedTasks: "completed_tasks"
         }
     }
 }

@@ -18,7 +18,7 @@ struct ContentView: View {
                         HomeView(navPath: $navPath)
                             .environment(scheduleManager)
                     case .tasks:
-                        Text("Tasks Screen").foregroundColor(.white)
+                        TasksListView(navPath: $navPath)
                     case .settings:
                         SettingsView(navPath: $navPath)
                             .environment(scheduleManager)
@@ -31,18 +31,15 @@ struct ContentView: View {
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationDestination(for: AppPaths.self) { route in
                 switch route {
-                case AppPaths.newSubject:
-                    SubjectView()
-                case AppPaths.newWeekSubject(let week, let weekday):
-                    WeekSubjectView(navPath: $navPath, currentWeek: week, weekday: weekday)
-                case AppPaths.newSchedule:
-                    ScheduleView(schedule: nil, manager: scheduleManager)
-                case AppPaths.scheduleList:
-                    ScheduleList(navPath: $navPath)
-                case AppPaths.subjectList(let context):
-                    SubjectList(navPath: $navPath, context: context)
-                case AppPaths.classesTypesList:
-                    ClassTypeList()
+                case .newSubject: SubjectView()
+                case .newWeekSubject(let week, let weekday): WeekSubjectView(navPath: $navPath,
+                                                                             currentWeek: week, weekday: weekday)
+                case .newSchedule: ScheduleView(schedule: nil, manager: scheduleManager)
+                case .scheduleList: ScheduleList(navPath: $navPath)
+                case .subjectList(let context): SubjectList(navPath: $navPath, context: context)
+                case .classesTypesList: ClassTypeList()
+                case .taskEditor(let task): TaskEditorView(taskToEdit: task, navPath: $navPath)
+                case .completedTasks: TasksListView(navPath: $navPath, showCompleted: true)
                 }
             }
             .navigationDestination(for: WeekSubject.self) { subject in

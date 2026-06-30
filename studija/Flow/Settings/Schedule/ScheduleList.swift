@@ -27,8 +27,10 @@ struct ScheduleList: View {
         ZStack {
             Color.black.ignoresSafeArea()
 
-            VStack(spacing: 20) {
-                ScrollView {
+            ScrollView {
+                VStack(spacing: 12) {
+                    SearchField(searchText: $searchText)
+
                     if filteredSchedules.isEmpty {
                         EmptyListView(text: "No schedules")
                     } else {
@@ -37,11 +39,11 @@ struct ScheduleList: View {
                                 scheduleCard(for: schedule)
                             }
                         }
-                        .padding(.horizontal, 16)
                     }
-                }.searchable(text: $searchText,
-                             placement: .navigationBarDrawer(displayMode: .always),
-                             prompt: Text("Search"))
+                }.padding(.horizontal, 16)
+                //                .searchable(text: $searchText,
+                //                            placement: .navigationBarDrawer(displayMode: .always),
+                //                            prompt: Text("Search"))
             }
         }
         .navigationTitle(Text("Schedules"))

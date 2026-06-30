@@ -34,6 +34,7 @@ struct SubjectCard: View {
 
                 Spacer()
             }
+            .fixedSize(horizontal: false, vertical: true)
             .modifier(RoundedBackground())
         }
         .buttonStyle(PressButtonStyle())

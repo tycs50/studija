@@ -39,8 +39,10 @@ struct WeekListView: View {
         ZStack {
             Color.black.ignoresSafeArea()
 
-            VStack(spacing: 16) {
-                ScrollView {
+            ScrollView {
+                VStack(spacing: 12) {
+                    SearchField(searchText: $searchText)
+
                     if filteredWeeks.isEmpty {
                         EmptyListView(text: "No weeks")
                     } else {
@@ -49,11 +51,11 @@ struct WeekListView: View {
                                 weekCard(for: week)
                             }
                         }
-                        .padding(.horizontal, 16)
                     }
-                }.searchable(text: $searchText,
-                             placement: .navigationBarDrawer(displayMode: .always),
-                             prompt: Text("Search"))
+                }.padding(.horizontal, 16)
+                //                .searchable(text: $searchText,
+                //                            placement: .navigationBarDrawer(displayMode: .always),
+                //                            prompt: Text("Search"))
             }
         }
         .navigationTitle(schedule.title ?? "Schedule")
