@@ -9,34 +9,35 @@ struct SubjectList: View {
     @Binding var navPath: NavigationPath
     @State var searchText = ""
     let context: SubjectSelectionContext?
+    var filteredSubjects: [Subject] {
+        if searchText.isEmpty {
+            return Array(subjects)
+        } else {
+            return subjects.filter { ($0.title ?? "").localizedCaseInsensitiveContains(searchText) }
+        }
+    }
 
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
 
             VStack(spacing: 20) {
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.gray)
-                    TextField("Search", text: $searchText)
-                        .foregroundColor(.white)
-                }
-                .padding(.horizontal, 16)
-                .frame(height: 50)
-                .background(Color(white: 0.15))
-                .cornerRadius(12)
-                .padding(.horizontal, 16)
-
                 ScrollView {
-                    LazyVStack(spacing: 12) {
-                        ForEach(subjects, id: \.id) { subject in
-                            SubjectCard(item: subject, navPath: $navPath, onSelect: context == nil ? nil : { chosen in
-                                context?.onSelect(chosen)
-                            })
+                    if filteredSubjects.isEmpty {
+                        EmptyListView(text: "No subjects")
+                    } else {
+                        LazyVStack(spacing: 12) {
+                            ForEach(filteredSubjects, id: \.id) { subject in
+                                SubjectCard(item: subject, navPath: $navPath, onSelect: context == nil ? nil : { chosen in
+                                    context?.onSelect(chosen)
+                                })
+                            }
                         }
+                        .padding(.horizontal, 16)
                     }
-                    .padding(.horizontal, 16)
-                }
+                }.searchable(text: $searchText,
+                             placement: .navigationBarDrawer(displayMode: .always),
+                             prompt: Text("Search"))
             }
         }
         .navigationTitle(Text("Subjects"))

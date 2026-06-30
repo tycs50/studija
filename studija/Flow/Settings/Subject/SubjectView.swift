@@ -14,7 +14,7 @@ struct SubjectView: View {
         ZStack {
             Color.black.ignoresSafeArea()
 
-            VStack(spacing: 0) {
+            VStack(spacing: 16) {
                 HStack(alignment: .top, spacing: 14) {
                     ColorPicker("", selection: $viewModel.accentColor)
                         .labelsHidden()
@@ -38,8 +38,6 @@ struct SubjectView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
 
-                Spacer()
-
                 if viewModel.isEditing {
                     Button(action: {
                         viewModel.delete(context: viewContext)
@@ -59,6 +57,8 @@ struct SubjectView: View {
                     .padding(.horizontal, 20)
                     .padding(.bottom, 20)
                 }
+
+                Spacer()
             }
         }
         .navigationTitle(viewModel.isEditing ? "Edit Subject" : "New Subject")

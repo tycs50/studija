@@ -49,15 +49,8 @@ struct HomeDayScheduleView: View {
 
                 LazyVStack(spacing: 10) {
                     if classes.isEmpty {
-                        VStack(spacing: 12) {
-                            Image(systemName: "moon.stars")
-                                .font(.system(size: 40))
-                                .foregroundColor(.white.opacity(0.25))
-                            Text("No classes today")
-                                .font(.system(size: 16))
-                                .foregroundColor(.white.opacity(0.3))
-                        }
-                        .padding(.top, 40)
+                        EmptyListView(text: "No classes today")
+                            .padding(.top, 40)
                     } else {
                         ForEach(classes) { item in
                             WeekSubjectCard(item: item, navPath: $navPath)

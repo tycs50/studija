@@ -40,27 +40,20 @@ struct WeekListView: View {
             Color.black.ignoresSafeArea()
 
             VStack(spacing: 16) {
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.gray)
-                    TextField("Search", text: $searchText)
-                        .foregroundColor(.white)
-                }
-                .padding(.horizontal, 16)
-                .frame(height: 50)
-                .background(Color(white: 0.15))
-                .cornerRadius(12)
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-
                 ScrollView {
-                    LazyVStack(spacing: 12) {
-                        ForEach(filteredWeeks) { week in
-                            weekCard(for: week)
+                    if filteredWeeks.isEmpty {
+                        EmptyListView(text: "No weeks")
+                    } else {
+                        LazyVStack(spacing: 12) {
+                            ForEach(filteredWeeks) { week in
+                                weekCard(for: week)
+                            }
                         }
+                        .padding(.horizontal, 16)
                     }
-                    .padding(.horizontal, 16)
-                }
+                }.searchable(text: $searchText,
+                             placement: .navigationBarDrawer(displayMode: .always),
+                             prompt: Text("Search"))
             }
         }
         .navigationTitle(schedule.title ?? "Schedule")

@@ -62,9 +62,27 @@ struct HomeView: View {
 
                     let activeWeekTitle = viewModel.activeWeek(for: viewModel.selectedDate, manager: manager, allWeeks: Array(allWeeks))?.title ?? ""
                     Text("\(viewModel.dateLabel(for: viewModel.selectedDate)) \(activeWeekTitle.isEmpty ? "" : "• \(activeWeekTitle.lowercased())")")
-                        .font(.system(size: 15))
+                        .font(.system(size: 18))
                         .foregroundColor(.white.opacity(0.5))
+
+                    ZStack {
+                        HStack {
+                            Text("Select Manually")
+                                .font(.system(size: 16, weight: .semibold))
+
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 13))
+                        }
+                        .foregroundStyle(Color.accentColor)
+
+                        DatePicker("", selection: $viewModel.selectedDate, displayedComponents: .date)
+                            .datePickerStyle(.compact)
+                            .labelsHidden()
+                            .scaleEffect(1.5)
+                            .colorMultiply(.clear)
+                    }
                 }
+
                 Spacer()
 
                 if !calendar.isDateInToday(viewModel.selectedDate) {
@@ -73,13 +91,25 @@ struct HomeView: View {
                             viewModel.selectedDate = Date()
                         }
                     }) {
+//                        HStack {
+//                            Text("Today")
+//                                .font(.system(size: 20, weight: .bold))
+//
+//                            Image(systemName: "calendar")
+//                                .font(.system(size: 22, weight: .medium))
+//                        }.foregroundColor(.white)
+//                        .padding(.vertical, 10)
+//                        .padding(.horizontal)
+//                        .background(Color(red: 0.38, green: 0.82, blue: 0.44))
+//                        .cornerRadius(16)
+
                         RoundedRectangle(cornerRadius: 14)
                             .fill(Color(red: 0.38, green: 0.82, blue: 0.44))
                             .frame(width: 50, height: 50)
                             .overlay(
                                 Image(systemName: "calendar")
-                                    .foregroundColor(.white)
                                     .font(.system(size: 22, weight: .medium))
+                                    .foregroundStyle(.white)
                             )
                     }
                 }

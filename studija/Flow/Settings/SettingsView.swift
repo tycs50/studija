@@ -23,10 +23,10 @@ struct SettingsView: View {
                         navPath: $navPath
                     )
 
-                    SettingsRow(
-                        title: "App Version: 2.4.1 (Build 102)",
-                        navPath: $navPath
-                    )
+                    SettingsRow(title: "Classes Types",
+                                icon: "eyeglasses",
+                                route: AppPaths.classesTypesList,
+                                navPath: $navPath)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 20)

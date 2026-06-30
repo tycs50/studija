@@ -10,11 +10,11 @@ struct WeekSubjectCard: View {
         }) {
             HStack(alignment: .top, spacing: 10) {
                 Color(hex: item.subject?.color ?? "")
-                    .frame(width: 3)
+                    .frame(width: 5)
                     .cornerRadius(5)
 
                 VStack(alignment: .leading, spacing: 8) {
-                    if let type = item.subjectType {
+                    if let type = item.type {
                         SubjectTypeBadge(type: type)
                     }
 
@@ -67,14 +67,14 @@ struct WeekSubjectCard: View {
 
     private func SubjectTypeBadge(type: SubjectType) -> some View {
         HStack(spacing: 4) {
-            Image(systemName: type.iconName)
-            Text(type.name.uppercased())
+            Image(systemName: type.iconName ?? "")
+            Text(type.name?.uppercased() ?? "")
         }
         .font(.footnote)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .background(Color(hex: type.colorHex).opacity(0.15))
-        .foregroundColor(Color(hex: type.colorHex))
+        .background(Color(hex: type.colorHex ?? "").opacity(0.15))
+        .foregroundColor(Color(hex: type.colorHex ?? ""))
         .cornerRadius(6)
     }
 }

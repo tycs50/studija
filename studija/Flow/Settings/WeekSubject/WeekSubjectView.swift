@@ -52,7 +52,6 @@ struct WeekSubjectView: View {
                                 .background(Color(white: 0.11))
                                 .cornerRadius(14)
                             }
-                            .padding(.top, 8)
                         }
                     }
                     .padding(.horizontal, 20)
@@ -133,6 +132,7 @@ struct WeekSubjectView: View {
                     .datePickerStyle(.compact)
                     .labelsHidden()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .scaleEffect(x: 2, y: 1)
                     .colorMultiply(.clear)
                     .onChange(of: viewModel.startTime) { _, newStartTime in
                         viewModel.isStartTimeSet = !(viewModel.isEndTimeSet && newStartTime >= viewModel.endTime)
@@ -159,6 +159,7 @@ struct WeekSubjectView: View {
                     .datePickerStyle(.compact)
                     .labelsHidden()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .scaleEffect(x: 2, y: 1)
                     .colorMultiply(.clear)
                     .onChange(of: viewModel.endTime) { _, newEndTime in
                         viewModel.isEndTimeSet = !(viewModel.isStartTimeSet && newEndTime <= viewModel.startTime)

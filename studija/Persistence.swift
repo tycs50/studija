@@ -33,6 +33,41 @@ struct PersistenceController {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         })
+
+
+        seedDefaultClassesTypes(context: container.viewContext)
         container.viewContext.automaticallyMergesChangesFromParent = true
+    }
+
+    private func seedDefaultClassesTypes(context: NSManagedObjectContext) {
+        let request: NSFetchRequest<SubjectType> = SubjectType.fetchRequest()
+        request.predicate = NSPredicate(format: "isCustom == false")
+        request.fetchLimit = 1
+
+        do {
+            let count = try context.count(for: request)
+            guard count == 0 else { return }
+
+            let defaults = [
+                ("Lecture", "brain.head.profile", "#FF9F0A"),
+                ("Seminar", "person.3.fill", "#30D158"),
+                ("Lab", "flask.fill", "#5E5CE6")
+            ]
+
+            for (name, icon, hex) in defaults {
+                let newType = SubjectType(context: context)
+                newType.id = UUID()
+                newType.name = name
+                newType.iconName = icon
+                newType.colorHex = hex
+                newType.isCustom = false
+            }
+
+            if context.hasChanges {
+                try context.save()
+            }
+        } catch {
+            print("Error seeding classes types: \(error)")
+        }
     }
 }

@@ -1,27 +1,16 @@
 import SwiftUI
+import CoreData
 
 struct CustomTypeCreationSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.managedObjectContext) private var viewContext
+
+    let typeToEdit: SubjectType?
+    var onDelete: (() -> Void)? = nil
 
     @State private var typeName: String = ""
     @State private var selectedIcon: String = "book.fill"
     @State private var selectedColorHex: String = "#FF3B30"
-
-    var onSave: (SubjectType) -> Void
-
-    private let icons = [
-        "book.fill", "graduationcap.fill", "pencil.and.outline", "flask.fill",
-        "globe.desk", "chart.bar.xaxis", "briefcase.fill", "theatermasks.fill",
-        "sportscourt.fill", "waveform.path", "function", "brain.head.profile"
-    ]
-
-    private let colors = [
-        "#FF3B30", "#FF9F0A", "#FFCC00", "#34C759",
-        "#00C7BE", "#30B0C7", "#32ADE6", "#007AFF",
-        "#5856D6", "#AF52DE", "#FF2D55", "#A2845E"
-    ]
-
-    private let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
 
     var body: some View {
         NavigationStack {
@@ -30,40 +19,43 @@ struct CustomTypeCreationSheet: View {
 
                 ScrollView {
                     VStack(spacing: 24) {
-
-                        VStack(spacing: 8) {
-                            Text("Preview")
-                                .font(.system(size: 13))
-                                .foregroundColor(.white.opacity(0.4))
-
-                            HStack(spacing: 6) {
-                                Image(systemName: selectedIcon)
-                                    .frame(width: 28, height: 28, alignment: .center)
-                                Text(typeName.isEmpty ? "TYPE NAME" : typeName.uppercased())
+                        HStack(spacing: 6) {
+                            Image(systemName: selectedIcon)
+                                .frame(width: 28, height: 28, alignment: .center)
+                            if !typeName.isEmpty {
+                                Text(typeName.uppercased())
+                            } else {
+                                Text("NAME").italic()
                             }
-                            .font(.system(size: 14, weight: .bold))
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 10)
-                            .background(Color(hex: selectedColorHex).opacity(0.15))
-                            .foregroundColor(Color(hex: selectedColorHex))
-                            .cornerRadius(8)
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color(white: 0.07))
-                        .cornerRadius(16)
+                        .font(.system(size: 14, weight: .bold))
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(Color(hex: selectedColorHex).opacity(0.15))
+                        .foregroundColor(Color(hex: selectedColorHex))
+                        .cornerRadius(8)
+//                        }
+//                        .frame(maxWidth: .infinity)
+//                        .padding(.vertical, 16)
+//                        .background(Color(white: 0.07))
+//                        .cornerRadius(16)
 
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Name")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.white.opacity(0.6))
+                            TextField("Name", text: $typeName, axis: .vertical)
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.white)
+                                .tint(.white)
+                                .lineLimit(1...10)
+                                .onChange(of: typeName) { _, newValue in
+                                    if newValue.count > nameLimit {
+                                        typeName = String(newValue.prefix(nameLimit))
+                                    }
+                                }
 
-                            TextField("e.g. Consultation, Exam", text: $typeName)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 14)
-                                .background(Color(white: 0.11))
-                                .foregroundColor(.white)
-                                .cornerRadius(12)
+                            Text("\(typeName.count)/\(nameLimit)")
+                                .font(.system(size: 13, weight: .regular))
+                                .foregroundStyle(Color(white: 0.45))
                         }
 
                         VStack(alignment: .leading, spacing: 12) {
@@ -118,11 +110,29 @@ struct CustomTypeCreationSheet: View {
                                 }
                             }
                         }
+
+                        if typeToEdit != nil {
+                            Button(role: .destructive) {
+                                deleteType()
+                                dismiss()
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "trash")
+                                    Text("Remove")
+                                }
+                                .font(.system(size: 17, weight: .medium))
+                                .foregroundColor(.red)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 16)
+                                .background(Color(white: 0.11))
+                                .cornerRadius(14)
+                            }
+                        }
                     }
                     .padding(20)
                 }
             }
-            .navigationTitle("New Type")
+            .navigationTitle(typeToEdit == nil ? "New Type" : "Edit Type")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -130,19 +140,68 @@ struct CustomTypeCreationSheet: View {
                         .foregroundColor(.white.opacity(0.6))
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
-                        let newType = SubjectType(name: typeName, iconName: selectedIcon, colorHex: selectedColorHex)
-                        onSave(newType)
-                        dismiss()
+                    Button(typeToEdit == nil ? "Done" : "Save") {
+                        saveType()
                     }
                     .disabled(typeName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                    .foregroundColor(typeName.isEmpty ? .gray : Color(hex: selectedColorHex))
+                    .foregroundColor(typeName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .gray : Color(hex: selectedColorHex))
                 }
             }
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarBackground(Color(white: 0.05), for: .navigationBar)
         }
         .presentationDragIndicator(.visible)
-        .presentationDetents([.medium, .large]) // Красиво открывается наполовину экрана
+        .presentationDetents([.medium, .large])
+        .onAppear {
+            if let typeToEdit {
+                typeName = typeToEdit.name ?? ""
+                selectedIcon = typeToEdit.iconName ?? icons[0]
+                selectedColorHex = typeToEdit.colorHex ?? colors[0]
+            }
+        }
     }
+
+    private func saveType() {
+        let entity = typeToEdit ?? SubjectType(context: viewContext)
+
+        entity.name = typeName
+        entity.iconName = selectedIcon
+        entity.colorHex = selectedColorHex
+
+        if typeToEdit == nil {
+            entity.id = UUID()
+            entity.isCustom = true
+        }
+
+        do {
+            if viewContext.hasChanges {
+                try viewContext.save()
+            }
+            dismiss()
+        } catch {
+            print("Error saving class type: \(error)")
+        }
+    }
+
+    private func deleteType() {
+        guard let type = typeToEdit else { return }
+        viewContext.delete(type)
+        try? viewContext.save()
+
+        onDelete?()
+        dismiss()
+    }
+
+    private let icons = [
+        "book.fill", "graduationcap.fill", "pencil.and.outline", "bolt.fill",
+        "globe.desk", "chart.bar.xaxis", "briefcase.fill", "theatermasks.fill",
+        "sportscourt.fill", "waveform.path", "function", "paintpalette.fill"
+    ]
+
+    private let colors = [
+        "#FF3B30", "#FF9F0A", "#FFCC00", "#34C759",
+        "#00C7BE", "#30B0C7", "#32ADE6", "#007AFF",
+        "#5856D6", "#AF52DE", "#FF2D55", "#A2845E"
+    ]
+
+    private let nameLimit = 15
+    private let columns = Array(repeating: GridItem(.flexible()), count: 4)
 }

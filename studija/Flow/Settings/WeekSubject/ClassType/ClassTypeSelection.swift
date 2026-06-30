@@ -1,19 +1,24 @@
 import SwiftUI
 
 struct SubjectTypeSelection: View {
+    @Environment(\.managedObjectContext) var context
     @Bindable var viewModel: WeekSubjectViewModel
-    @State private var showingCustomSheet = false
+    @State private var showCreatingSheet = false
+    @State private var typeToEdit: SubjectType? = nil
 
-    var allTypes: [SubjectType] {
-        SubjectType.defaults + viewModel.customTypes
-    }
+    @FetchRequest(
+        sortDescriptors: [
+            SortDescriptor(\.isCustom, order: .forward),
+            SortDescriptor(\.name, order: .forward)
+        ]
+    ) private var allTypes: FetchedResults<SubjectType>
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
                 ForEach(allTypes) { type in
                     let isSelected = viewModel.selectedType?.name == type.name
-                    let typeColor = Color(hex: type.colorHex)
+                    let typeColor = Color(hex: type.colorHex ?? "")
 
                     Button(action: {
                         withAnimation(.spring(response: 0.3)) {
@@ -25,8 +30,8 @@ struct SubjectTypeSelection: View {
                         }
                     }) {
                         HStack(spacing: 6) {
-                            Image(systemName: type.iconName)
-                            Text(type.name)
+                            Image(systemName: type.iconName ?? "")
+                            Text(type.name ?? "")
                         }
                         .font(.system(size: 15, weight: .medium))
                         .padding(.horizontal, 14)
@@ -39,9 +44,26 @@ struct SubjectTypeSelection: View {
                         )
                         .clipShape(RoundedRectangle(cornerRadius: 16))
                     }
+                    .contextMenu {
+                        if type.isCustom {
+                            Button {
+                                typeToEdit = type
+                            } label: {
+                                Label("Edit", systemImage: "pencil")
+                            }
+
+                            Button(role: .destructive) {
+                                viewModel.deleteClassType(type, in: context)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                    }
                 }
 
-                Button(action: { showingCustomSheet = true }) {
+                Button(action: {
+                    showCreatingSheet = true
+                }) {
                     HStack(spacing: 4) {
                         Image(systemName: "plus")
                         Text("Custom")
@@ -56,13 +78,12 @@ struct SubjectTypeSelection: View {
             }
             .padding(.horizontal, 20)
         }
-        .sheet(isPresented: $showingCustomSheet) {
-            CustomTypeCreationSheet { createdType in
-                viewModel.customTypes.append(createdType)
-
-                withAnimation(.spring(response: 0.3)) {
-                    viewModel.selectedType = createdType
-                }
+        .sheet(isPresented: $showCreatingSheet) {
+            CustomTypeCreationSheet(typeToEdit: nil)
+        }
+        .sheet(item: $typeToEdit) { type in
+            CustomTypeCreationSheet(typeToEdit: type) {
+                viewModel.selectedType = nil
             }
         }
     }

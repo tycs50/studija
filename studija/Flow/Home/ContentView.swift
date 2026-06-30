@@ -19,8 +19,6 @@ struct ContentView: View {
                             .environment(scheduleManager)
                     case .tasks:
                         Text("Tasks Screen").foregroundColor(.white)
-                    case .calendar:
-                        Text("Calendar Screen").foregroundColor(.white)
                     case .settings:
                         SettingsView(navPath: $navPath)
                             .environment(scheduleManager)
@@ -35,16 +33,16 @@ struct ContentView: View {
                 switch route {
                 case AppPaths.newSubject:
                     SubjectView()
-                        .environment(\.managedObjectContext, viewContext)
                 case AppPaths.newWeekSubject(let week, let weekday):
                     WeekSubjectView(navPath: $navPath, currentWeek: week, weekday: weekday)
-                        .environment(\.managedObjectContext, viewContext)
                 case AppPaths.newSchedule:
                     ScheduleView(schedule: nil, manager: scheduleManager)
                 case AppPaths.scheduleList:
                     ScheduleList(navPath: $navPath)
                 case AppPaths.subjectList(let context):
                     SubjectList(navPath: $navPath, context: context)
+                case AppPaths.classesTypesList:
+                    ClassTypeList()
                 }
             }
             .navigationDestination(for: WeekSubject.self) { subject in
@@ -64,13 +62,12 @@ struct ContentView: View {
 }
 
 enum Tab: CaseIterable {
-    case home, tasks, calendar, settings
+    case home, tasks, settings
 
     var iconName: String {
         switch self {
         case .home: return "house"
         case .tasks:    return "list.bullet"
-        case .calendar: return "calendar"
         case .settings: return "gearshape"
         }
     }
@@ -79,7 +76,6 @@ enum Tab: CaseIterable {
         switch self {
         case .home: return "Schedule"
         case .tasks:    return "Tasks"
-        case .calendar: return "Calendar"
         case .settings: return "Settings"
         }
     }
