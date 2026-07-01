@@ -15,9 +15,6 @@ struct ClassTypeList: View {
     @State private var selectedType: SubjectType? = nil
 
     var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-
             ScrollView {
                 if subjectTypes.isEmpty {
                     EmptyListView(text: "No types")
@@ -30,7 +27,6 @@ struct ClassTypeList: View {
                     .padding(20)
                 }
             }
-        }
         .navigationTitle("Class Types")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -40,7 +36,6 @@ struct ClassTypeList: View {
                 } label: {
                     Image(systemName: "plus")
                         .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.white)
                 }
             }
         }
@@ -50,6 +45,7 @@ struct ClassTypeList: View {
         .sheet(item: $selectedType) { type in
             CustomTypeCreationSheet(typeToEdit: type)
         }
+        .background(Color.appBackground)
     }
 
     @ViewBuilder

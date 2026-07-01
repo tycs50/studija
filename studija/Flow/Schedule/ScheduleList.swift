@@ -24,27 +24,23 @@ struct ScheduleList: View {
     @Binding var navPath: NavigationPath
 
     var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
+        ScrollView {
+            VStack(spacing: 12) {
+                SearchField(searchText: $searchText)
 
-            ScrollView {
-                VStack(spacing: 12) {
-                    SearchField(searchText: $searchText)
-
-                    if filteredSchedules.isEmpty {
-                        EmptyListView(text: "No schedules")
-                    } else {
-                        LazyVStack(spacing: 12) {
-                            ForEach(filteredSchedules) { schedule in
-                                scheduleCard(for: schedule)
-                            }
+                if filteredSchedules.isEmpty {
+                    EmptyListView(text: "No schedules")
+                } else {
+                    LazyVStack(spacing: 12) {
+                        ForEach(filteredSchedules) { schedule in
+                            scheduleCard(for: schedule)
                         }
                     }
-                }.padding(.horizontal, 16)
-                //                .searchable(text: $searchText,
-                //                            placement: .navigationBarDrawer(displayMode: .always),
-                //                            prompt: Text("Search"))
-            }
+                }
+            }.padding(.horizontal, 16)
+            //                .searchable(text: $searchText,
+            //                            placement: .navigationBarDrawer(displayMode: .always),
+            //                            prompt: Text("Search"))
         }
         .navigationTitle(Text("Schedules"))
         .toolbar {
@@ -56,6 +52,7 @@ struct ScheduleList: View {
                 }
             }
         }
+        .background(Color.appBackground)
     }
 
     @ViewBuilder
@@ -69,29 +66,27 @@ struct ScheduleList: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(schedule.title ?? "Untitled")
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.white)
 
                     if isCurrent {
                         Text("Current schedule")
                             .font(.system(size: 14))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.secondary)
                     }
                 }
 
                 Spacer()
 
                 HStack(spacing: 16) {
-                    Button(action: { /* TODO: */ }) {
-                        Image(systemName: "square.and.arrow.up")
-                            .foregroundColor(.white)
-                    }
+//                    Button(action: { /* TODO: */ }) {
+//                        Image(systemName: "square.and.arrow.up")
+//                            .foregroundColor(.white)
+//                    }
 
                     NavigationLink(destination: ScheduleView(schedule: schedule, manager: manager)) {
                         Image(systemName: "pencil")
-                            .foregroundColor(.white)
-                    }
+                    }.buttonStyle(.plain)
                 }
             }.modifier(RoundedBackground())
-        }
+        }.buttonStyle(.plain)
     }
 }

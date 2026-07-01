@@ -34,13 +34,13 @@ struct SettingsRow: View {
             if let icon = icon {
                 Image(systemName: icon)
                     .font(.system(size: 20))
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(.secondary)
                     .frame(width: 24, alignment: .center)
             }
 
             Text(title)
                 .font(.system(size: 17, weight: .semibold))
-                .foregroundColor(.white)
+                .foregroundColor(.primary)
 
             Spacer()
 

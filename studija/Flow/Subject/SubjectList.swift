@@ -18,9 +18,6 @@ struct SubjectList: View {
     }
 
     var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-
             ScrollView {
                 VStack(spacing: 12) {
                     SearchField(searchText: $searchText)
@@ -30,18 +27,14 @@ struct SubjectList: View {
                     } else {
                         LazyVStack(spacing: 12) {
                             ForEach(filteredSubjects, id: \.id) { subject in
-                                SubjectCard(item: subject, navPath: $navPath, onSelect: context == nil ? nil : { chosen in
+                                SubjectCard(subject, navPath: $navPath, onSelect: context == nil ? nil : { chosen in
                                     context?.onSelect(chosen)
                                 })
                             }
                         }
                     }
                 }.padding(.horizontal, 16)
-                //                .searchable(text: $searchText,
-                //                            placement: .navigationBarDrawer(displayMode: .always),
-                //                            prompt: Text("Search"))
             }
-        }
         .navigationTitle(Text("Subjects"))
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -52,5 +45,6 @@ struct SubjectList: View {
                 }
             }
         }
+        .background(Color.appBackground)
     }
 }

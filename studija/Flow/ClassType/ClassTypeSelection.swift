@@ -36,11 +36,11 @@ struct SubjectTypeSelection: View {
                         .font(.system(size: 15, weight: .medium))
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
-                        .background(isSelected ? typeColor.opacity(0.15) : Color(white: 0.11))
-                        .foregroundColor(isSelected ? typeColor : .white.opacity(0.6))
+                        .background(isSelected ? typeColor.opacity(0.15) : .cardBackground)
+                        .foregroundColor(isSelected ? typeColor : .secondary)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(isSelected ? typeColor : Color(white: 0.2), lineWidth: 1)
+                                .stroke(isSelected ? typeColor : .cardBackground, lineWidth: 1)
                         )
                         .clipShape(RoundedRectangle(cornerRadius: 16))
                     }
@@ -69,10 +69,10 @@ struct SubjectTypeSelection: View {
                         Text("Custom")
                     }
                     .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(.secondary)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-                    .background(Color(white: 0.11))
-                    .foregroundColor(.white.opacity(0.8))
+                    .background(Color.cardBackground)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
             }

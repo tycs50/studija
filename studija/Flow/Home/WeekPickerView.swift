@@ -112,33 +112,21 @@ private struct DayCell: View {
 
     // MARK: Colours
     private var badgeFill: Color {
-        if isSelected { return Color(white: 0.30) }
-        if isToday    { return Color(white: 0.16) }
+        if isSelected { return Color.selectedDayBackground }// Color(white: 0.30) }
+        if isToday    { return Color.lightSelection }// return Color(white: 0.16) }
         return .clear
     }
 
     private var labelColor: Color {
         if isSelected { return .white }
         if isSunday   { return .red.opacity(0.85) }
-        return .white.opacity(0.45)
+        return .secondary
     }
 
     private var numberColor: Color {
         if isSelected         { return .white }
         if isSunday           { return .red }
-        if isToday            { return .white.opacity(0.85) }
-        return .white.opacity(0.65)
+        if isToday            { return .primary }// .white.opacity(0.85) }
+        return .secondary // .white.opacity(0.65)
     }
-}
-
-#Preview {
-    struct prev: View {
-        @State var date = Date()
-
-        var body: some View {
-            WeekPickerView(selectedDate: $date)
-        }
-    }
-
-    return prev()
 }

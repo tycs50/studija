@@ -68,15 +68,14 @@ struct HomeDayScheduleView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.white)
+            
             Text(value)
                 .font(.system(size: 22, weight: .bold))
-                .foregroundColor(.white)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 18)
         .padding(.vertical, 16)
-        .background(Color(white: 0.13))
+        .background(Color.cardBackground)
         .cornerRadius(16)
     }
 }

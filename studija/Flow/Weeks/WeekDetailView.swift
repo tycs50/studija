@@ -33,22 +33,8 @@ struct WeekDetailView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-
             VStack(spacing: 20) {
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.gray)
-                    TextField("Search", text: $viewModel.searchText)
-                        .foregroundColor(.white)
-                }
-                .padding(.horizontal, 16)
-                .frame(height: 50)
-                .background(Color(white: 0.15))
-                .cornerRadius(12)
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
+                SearchField(searchText: $viewModel.searchText)
 
                 HStack(spacing: 0) {
                     ForEach(0..<viewModel.days.count, id: \.self) { index in
@@ -56,12 +42,12 @@ struct WeekDetailView: View {
 
                         Text(viewModel.days[index])
                             .font(.system(size: 14, weight: isSelected ? .bold : .medium))
-                            .foregroundColor(isSelected ? .white : .gray)
+                            .foregroundColor(isSelected ? .white : .primary)
                             .frame(maxWidth: .infinity)
                             .frame(height: 40)
                             .background(
                                 Circle()
-                                    .fill(isSelected ? Color(white: 0.15) : Color.clear)
+                                    .fill(isSelected ? .selectedDayBackground : Color.clear)
                                     .frame(width: 44, height: 44)
                             )
                             .onTapGesture {
@@ -71,7 +57,6 @@ struct WeekDetailView: View {
                             }
                     }
                 }
-                .padding(.horizontal, 8)
 
                 ScrollView {
                     LazyVStack(spacing: 12) {
@@ -79,10 +64,8 @@ struct WeekDetailView: View {
                             WeekSubjectCard(item: subject, navPath: $navPath)
                         }
                     }
-                    .padding(.horizontal, 16)
                 }
-            }
-        }
+            }.padding(.horizontal, 16)
         .navigationTitle(week.title ?? "Week")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -91,10 +74,10 @@ struct WeekDetailView: View {
                     navPath.append(AppPaths.newWeekSubject(week: week, weekday: viewModel.selectedDayIndex))
                 } label: {
                     Image(systemName: "plus")
-                        .foregroundColor(.white)
                         .font(.system(size: 16, weight: .bold))
                 }
             }
         }
+        .background(Color.appBackground)
     }
 }

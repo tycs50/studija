@@ -19,47 +19,39 @@ struct WeekSubjectView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 14) {
+//                    subjectSelectorSection
+                    SubjectSelectionView(navPath: $navPath,
+                                         navDestination: .subjectList(context: .init(
+                                            onSelect: { subject in
+                                                viewModel.selectedSubject = subject
+                                            }
+                                         )),
+                                         selectedSubject: $viewModel.selectedSubject)
 
-            VStack(spacing: 0) {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 14) {
-                        subjectSelectorSection
+                    SubjectTypeSelection(viewModel: viewModel)
+                        .padding(.horizontal, -20)
 
-                        SubjectTypeSelection(viewModel: viewModel)
-                            .padding(.horizontal, -20)
+                    timeSelectionRow
 
-                        timeSelectionRow
+                    inputField(placeholder: "Building, classroom", text: $viewModel.classroom, icon: "map")
 
-                        inputField(placeholder: "Building, classroom", text: $viewModel.classroom, icon: "map")
+                    inputField(placeholder: "Teacher", text: $viewModel.teacher, icon: "graduationcap")
 
-                        inputField(placeholder: "Teacher", text: $viewModel.teacher, icon: "graduationcap")
-
-                        if viewModel.weekSubject != nil {
-                            Button(role: .destructive) {
-                                viewModel.delete(context: viewContext)
-                                navPath.removeLast()
-                            } label: {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "trash")
-                                    Text("Remove")
-                                }
-                                .font(.system(size: 17, weight: .medium))
-                                .foregroundColor(.red)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
-                                .background(Color(white: 0.11))
-                                .cornerRadius(14)
-                            }
+                    if viewModel.weekSubject != nil {
+                        DeleteButton {
+                            viewModel.delete(context: viewContext)
+                            navPath.removeLast()
                         }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 24)
                 }
+                .padding(.horizontal, 20)
+                .padding(.top, 24)
             }
         }
-        .navigationTitle(Text(viewModel.weekSubject == nil ? "New subject" : "Subject"))
+        .navigationTitle(Text(viewModel.weekSubject == nil ? "New class" : "Class"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -69,12 +61,12 @@ struct WeekSubjectView: View {
                 } label: {
                     Image(systemName: "checkmark")
                         .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(.white)
                 }
                 .disabled(viewModel.isSaveDisabled)
                 .opacity(viewModel.isSaveDisabled ? 0.35 : 1)
             }
         }
+        .background(Color.appBackground)
     }
 
     @ViewBuilder
@@ -86,22 +78,23 @@ struct WeekSubjectView: View {
         }) {
             Group {
                 if let subject = viewModel.selectedSubject {
-                    SubjectCard(item: subject, navPath: $navPath)
+                    SubjectCard(subject, navPath: $navPath)
+                        .buttonStyle(BounceButtonStyle())
                         .disabled(true)
                 } else {
                     HStack {
                         Spacer()
                         Text("Select Subject")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(.secondary)
                         Spacer()
                     }
                     .padding(.vertical, 22)
-                    .background(Color.black)
+                    .background(Color.appBackground)
                     .cornerRadius(14)
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
-                            .stroke(Color(white: 0.3), lineWidth: 2)
+                            .stroke(Color.lightSelection, lineWidth: 2)
                     )
                 }
             }
@@ -109,24 +102,23 @@ struct WeekSubjectView: View {
     }
 
     private var timeSelectionRow: some View {
-        let placeholderColor = Color.white.opacity(0.35)
-
         return HStack(spacing: 12) {
             ZStack {
                 HStack(spacing: 10) {
                     Image(systemName: "timer")
-                        .foregroundColor(.white.opacity(0.6))
+                        .foregroundColor(.secondary)
                         .font(.system(size: 18))
 
                     Text(viewModel.isStartTimeSet ? timeFormatter.string(from: viewModel.startTime) : "Start")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(viewModel.isStartTimeSet ? .white.opacity(0.9) : placeholderColor)
+                        .foregroundColor(viewModel.isStartTimeSet ? .primary : .secondary)
                     Spacer()
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 16)
-                .background(Color(white: 0.11))
-                .cornerRadius(14)
+//                .padding(.horizontal, 16)
+//                .padding(.vertical, 16)
+//                .background(Color(white: 0.11))
+//                .cornerRadius(14)
+                .modifier(RoundedBackground())
 
                 DatePicker("", selection: $viewModel.startTime, displayedComponents: .hourAndMinute)
                     .datePickerStyle(.compact)
@@ -142,18 +134,19 @@ struct WeekSubjectView: View {
             ZStack {
                 HStack(spacing: 10) {
                     Image(systemName: "timer")
-                        .foregroundColor(.white.opacity(0.6))
+                        .foregroundColor(.secondary)
                         .font(.system(size: 18))
 
                     Text(viewModel.isEndTimeSet ? timeFormatter.string(from: viewModel.endTime) : "End")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(viewModel.isEndTimeSet ? .white.opacity(0.9) : placeholderColor)
+                        .foregroundColor(viewModel.isEndTimeSet ? .primary : .secondary)
                     Spacer()
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 16)
-                .background(Color(white: 0.11))
-                .cornerRadius(14)
+//                .padding(.horizontal, 16)
+//                .padding(.vertical, 16)
+//                .background(Color(white: 0.11))
+//                .cornerRadius(14)
+                .modifier(RoundedBackground())
 
                 DatePicker("", selection: $viewModel.endTime, displayedComponents: .hourAndMinute)
                     .datePickerStyle(.compact)
@@ -171,25 +164,14 @@ struct WeekSubjectView: View {
     private func inputField(placeholder: String, text: Binding<String>, icon: String) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .foregroundColor(.white.opacity(0.4))
+                .foregroundColor(.secondary)
                 .font(.system(size: 18))
                 .frame(width: 24)
 
-            ZStack(alignment: .leading) {
-                if text.wrappedValue.isEmpty {
-                    Text(placeholder)
-                        .foregroundColor(.white.opacity(0.35))
-                        .font(.system(size: 16))
-                }
-                TextField("", text: text)
-                    .foregroundColor(.white)
-                    .font(.system(size: 16))
-                    .autocorrectionDisabled()
-            }
+            TextField(placeholder, text: text)
+                .font(.system(size: 16))
+                .autocorrectionDisabled()
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 16)
-        .background(Color(white: 0.11))
-        .cornerRadius(14)
+        .modifier(RoundedBackground())
     }
 }

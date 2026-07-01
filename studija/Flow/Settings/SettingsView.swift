@@ -4,9 +4,6 @@ struct SettingsView: View {
     @Binding var navPath: NavigationPath
 
     var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-
             ScrollView {
                 VStack(spacing: 12) {
                     SettingsRow(
@@ -31,9 +28,9 @@ struct SettingsView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 20)
             }
-        }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
+        .background(Color.appBackground)
     }
 }
 

@@ -10,7 +10,7 @@ struct ContentView: View {
     var body: some View {
         NavigationStack(path: $navPath) {
             ZStack(alignment: .bottom) {
-                Color.black.ignoresSafeArea()
+                Color.appBackground.ignoresSafeArea()
 
                 Group {
                     switch selectedTab {

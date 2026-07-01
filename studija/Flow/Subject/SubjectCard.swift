@@ -5,7 +5,9 @@ struct SubjectCard: View {
     @Binding var navPath: NavigationPath
     let onSelect: ((Subject) -> Void)?
 
-    init(item: Subject, navPath: Binding<NavigationPath>, onSelect: ((Subject) -> Void)? = nil) {
+    init(_ item: Subject,
+         navPath: Binding<NavigationPath>,
+         onSelect: ((Subject) -> Void)? = nil) {
         self.item = item
         self._navPath = navPath
         self.onSelect = onSelect
@@ -20,23 +22,21 @@ struct SubjectCard: View {
                 navPath.append(item)
             }
         }) {
-            HStack(alignment: .top) {
+            HStack(alignment: .center) {
                 Color(hex: item.color ?? "")
                     .frame(width: 3)
                     .cornerRadius(5)
 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(item.title ?? "")
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.leading)
-                }
+                Text(item.title ?? "")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(Color(uiColor: .label))
+                    .multilineTextAlignment(.leading)
 
                 Spacer()
             }
             .fixedSize(horizontal: false, vertical: true)
-            .modifier(RoundedBackground())
+            .roundedBackground()
         }
-        .buttonStyle(PressButtonStyle())
+        .bounceStyle()
     }
 }

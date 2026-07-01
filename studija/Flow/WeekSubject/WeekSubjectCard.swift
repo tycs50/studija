@@ -20,7 +20,6 @@ struct WeekSubjectCard: View {
 
                     Text(item.subject?.title ?? "")
                         .font(.system(size: 22, weight: .bold))
-                        .foregroundColor(.white)
                         .multilineTextAlignment(.leading)
 
                     VStack(alignment: .leading, spacing: 2) {
@@ -32,7 +31,6 @@ struct WeekSubjectCard: View {
                                     .frame(width: 20)
                             }
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.white)
                         }
 
                         if let teacher = item.teacher, !teacher.isEmpty {
@@ -43,7 +41,6 @@ struct WeekSubjectCard: View {
                                     .frame(width: 20)
                             }
                             .font(.system(size: 15, weight: .regular))
-                            .foregroundColor(.white)
                         }
                     }
                 }
@@ -57,12 +54,11 @@ struct WeekSubjectCard: View {
                     Text(item.formattedEndTime)
                         .font(.system(size: 16, weight: .semibold))
                 }
-                .foregroundColor(.white)
                 .padding(.top, 4)
             }
             .modifier(RoundedBackground())
         }
-        .buttonStyle(PressButtonStyle())
+        .buttonStyle(BounceButtonStyle())
     }
 
     private func SubjectTypeBadge(type: SubjectType) -> some View {

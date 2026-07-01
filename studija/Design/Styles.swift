@@ -5,12 +5,18 @@ struct RoundedBackground: ViewModifier {
         content
             .padding(.horizontal, 16)
             .padding(.vertical, 18)
-            .background(Color(white: 0.12))
+            .background(Color.cardBackground)
             .cornerRadius(16)
     }
 }
 
-struct PressButtonStyle: ButtonStyle {
+extension View {
+    func roundedBackground() -> some View {
+        self.modifier(RoundedBackground())
+    }
+}
+
+struct BounceButtonStyle: ButtonStyle {
     @State var isPressed = false
 
     func makeBody(configuration: Configuration) -> some View {
@@ -21,5 +27,11 @@ struct PressButtonStyle: ButtonStyle {
             .onChange(of: configuration.isPressed) { newValue in
                 isPressed = newValue
             }
+    }
+}
+
+extension Button {
+    func bounceStyle() -> some View {
+        buttonStyle(BounceButtonStyle())
     }
 }

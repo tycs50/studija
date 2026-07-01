@@ -15,7 +15,7 @@ struct TaskEditorView: View {
     @State private var selectedSubject: Subject?
 
     private let titleLimit = 30
-    private let bodyLimit = 120
+    private let notesLimit = 120
 
     init(taskToEdit: Task? = nil, navPath: Binding<NavigationPath>) {
         self.taskToEdit = taskToEdit
@@ -28,44 +28,41 @@ struct TaskEditorView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-
-            VStack(spacing: 24) {
-                VStack(spacing: 16) {
-                    HStack(alignment: .top, spacing: 12) {
-                        priorityButton
-                        titleInputSection
-                    }
-
-                    bodyInputSection
-
-                    deadlineSection
-
-                    subjectSelectorSection
-                }
-
-                if taskToEdit != nil {
-                    Button(role: .destructive) {
-                        deleteTask()
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "trash")
-                            Text("Remove")
-                        }
-                        .font(.system(size: 17, weight: .medium))
-                        .foregroundColor(.red)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color(white: 0.11))
-                        .cornerRadius(14)
-                    }
-                }
-
-                Spacer()
+        VStack(spacing: 16) {
+            HStack(alignment: .top, spacing: 12) {
+                priorityButton
+                LimitedTextField(text: $title,
+                                 placeholder: "What needs to be done?",
+                                 limit: titleLimit,
+                                 font: .system(size: 20, weight: .bold))
             }
-            .padding(.horizontal, 20)
+
+            LimitedTextField(text: $notes,
+                             placeholder: "Notes",
+                             limit: notesLimit,
+                             font: .system(size: 22, weight: .semibold))
+
+            deadlineSection
+
+            SubjectSelectionView(navPath: $navPath,
+                                 navDestination: .subjectList(context: .init(
+                                    onSelect: { subject in
+                                        self.selectedSubject = subject
+                                    }
+                                 )),
+                                 selectedSubject: $selectedSubject,
+                                 text: "Select Subject (Optional)",
+                                 allowCancelation: true)
+
+            if taskToEdit != nil {
+                DeleteButton {
+                    deleteTask()
+                }
+            }
+
+            Spacer()
         }
+        .padding(.horizontal, 20)
         .navigationTitle(Text(taskToEdit == nil ? "New task" : "Task"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -80,6 +77,7 @@ struct TaskEditorView: View {
                 .opacity(title.isEmpty ? 0.5 : 1)
             }
         }
+        .background(Color.appBackground)
     }
 
     private var priorityButton: some View {
@@ -94,49 +92,7 @@ struct TaskEditorView: View {
                 )
         }
     }
-
-    private var titleInputSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            TextField("What needs to be done?", text: $title, axis: .vertical)
-                .font(.title3)
-                .fontWeight(.bold)
-                .foregroundStyle(.white)
-                .tint(.white)
-                .lineLimit(1...5)
-                .onChange(of: title) { _, newValue in
-                    if newValue.count > titleLimit {
-                        title = String(newValue.prefix(titleLimit))
-                    }
-                }
-
-            Text("\(title.count)/\(titleLimit)")
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundColor(.white.opacity(0.4))
-        }
-    }
-
-    private var bodyInputSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            TextField("Notes", text: $notes, axis: .vertical)
-                .font(.title2)
-                .fontWeight(.semibold)
-                .tint(.white)
-                .lineLimit(1...10)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .onChange(of: notes) { _, newValue in
-                    if newValue.count > bodyLimit {
-                        notes = String(newValue.prefix(bodyLimit))
-                    }
-                }
-
-            Text("\(notes.count)/\(bodyLimit)")
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundColor(.white.opacity(0.4))
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding(.top, 4)
-    }
-
+    
     private var deadlineSection: some View {
         HStack(spacing: 12) {
             ZStack {
@@ -152,16 +108,17 @@ struct TaskEditorView: View {
                     if deadline != nil {
                         Button(action: { deadline = nil }) {
                             Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(.white.opacity(0.4))
                         }
+                        .bounceStyle()
                         .zIndex(3)
                     }
                 }
-                .padding(.horizontal, 16)
-                .frame(height: 54)
-                .background(Color(white: 0.11))
-                .foregroundColor(.white.opacity(0.7))
-                .cornerRadius(14)
+                .foregroundColor(.secondary)
+//                .padding(.horizontal, 16)
+//                .frame(height: 54)
+//                .background(Color(white: 0.11))
+//                .cornerRadius(14)
+                .roundedBackground()
 
                 DatePicker("", selection: Binding(
                     get: { deadline ?? Date() },
@@ -201,42 +158,11 @@ struct TaskEditorView: View {
         }
     }
 
-    @ViewBuilder
-    private var subjectSelectorSection: some View {
-        Button(action: {
-            navPath.append(AppPaths.subjectList(context: .init(onSelect: { subject in
-                self.selectedSubject = subject
-            })))
-        }) {
-            VStack {
-                if let subject = selectedSubject {
-                    SubjectCard(item: subject, navPath: $navPath)
-                        .disabled(true)
-                } else {
-                    HStack {
-                        Spacer()
-                        Text("Select Subject (Optional)")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.white.opacity(0.7))
-                        Spacer()
-                    }
-                    .padding(.vertical, 22)
-                    .background(Color.black)
-                    .cornerRadius(14)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14)
-                            .stroke(Color(white: 0.3), lineWidth: 2)
-                    )
-                }
-            }
-        }
-    }
-
     private var priorityColor: Color {
         switch priority {
         case 1: return .yellow
         case 2: return .red
-        default: return .gray
+        default: return .secondary
         }
     }
 

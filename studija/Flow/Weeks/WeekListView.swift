@@ -36,9 +36,6 @@ struct WeekListView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-
             ScrollView {
                 VStack(spacing: 12) {
                     SearchField(searchText: $searchText)
@@ -57,7 +54,6 @@ struct WeekListView: View {
                 //                            placement: .navigationBarDrawer(displayMode: .always),
                 //                            prompt: Text("Search"))
             }
-        }
         .navigationTitle(schedule.title ?? "Schedule")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -67,13 +63,13 @@ struct WeekListView: View {
                     isShowingEditScreen = true
                 } label: {
                     Image(systemName: "plus")
-                        .foregroundColor(.white)
                 }
             }
         }
         .navigationDestination(isPresented: $isShowingEditScreen) {
             WeekView(viewModel: viewModel, isShowing: $isShowingEditScreen)
         }
+        .background(Color.appBackground)
     }
 
     @ViewBuilder
@@ -87,12 +83,11 @@ struct WeekListView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(week.title ?? "Untitled Week")
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.white)
 
                     if isCurrent {
                         Text("Current week")
                             .font(.system(size: 14))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.secondary)
                     }
                 }
 
@@ -103,11 +98,10 @@ struct WeekListView: View {
                     isShowingEditScreen = true
                 } label: {
                     Image(systemName: "pencil")
-                        .foregroundColor(.white)
                         .frame(width: 44, height: 44)
-                }
+                }.buttonStyle(.plain)
             }
             .modifier(RoundedBackground())
-        }
+        }.buttonStyle(BounceButtonStyle())
     }
 }

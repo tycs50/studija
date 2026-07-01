@@ -13,7 +13,7 @@ struct CustomTabBar: View {
         }
         .padding(.vertical, 12)
         .background(
-            Color(white: 0.12)
+            Color.cardBackground
                 .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: -5)
         )
         .cornerRadius(24)
@@ -40,7 +40,7 @@ struct TabItemButton: View {
                 Text(tab.label)
                     .font(.system(size: 11, weight: isSelected ? .medium : .regular))
             }
-            .foregroundColor(isSelected ? .white : .white.opacity(0.4))
+            .foregroundColor(isSelected ? .primary : .secondary)
             .frame(width: 65, height: 44)
         }
         .buttonStyle(.plain)

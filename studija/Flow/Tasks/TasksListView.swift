@@ -51,50 +51,46 @@ struct TasksListView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
+        ScrollView {
+            VStack(spacing: 12) {
+                SearchField(searchText: $searchText)
 
-            ScrollView {
-                VStack(spacing: 12) {
-                    SearchField(searchText: $searchText)
+                if !showCompleted {
+                    SettingsRow(title: "Completed",
+                                icon: "checkmark",
+                                route: .completedTasks,
+                                navPath: $navPath)
+                }
 
-                    if !showCompleted {
-                        SettingsRow(title: "Completed",
-                                    icon: "checkmark",
-                                    route: .completedTasks,
-                                    navPath: $navPath)
-                    }
+                if filteredTasks.isEmpty {
+                    EmptyListView(text: "No tasks")
+                } else {
+                    VStack(spacing: 12) {
+                        ForEach(groupedTasks, id: \.0) { date, tasks in
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text(formatSectionTitle(for: date))
+                                    .font(.system(size: 15, weight: .bold))
+                                    .foregroundColor(.secondary)
+                                    .padding(.horizontal, 4)
+                                    .textCase(.uppercase)
 
-                    if filteredTasks.isEmpty {
-                        EmptyListView(text: "No tasks")
-                    } else {
-                        VStack(spacing: 12) {
-                            ForEach(groupedTasks, id: \.0) { date, tasks in
-                                VStack(alignment: .leading, spacing: 12) {
-                                    Text(formatSectionTitle(for: date))
-                                        .font(.system(size: 15, weight: .bold))
-                                        .foregroundColor(.white.opacity(0.5))
-                                        .padding(.horizontal, 4)
-                                        .textCase(.uppercase)
-
-                                    VStack(spacing: 12) {
-                                        ForEach(tasks) { task in
-                                            TaskRow(task: task) {
-                                                toggleCompletion(for: task)
-                                            } onTap: {
-                                                navPath.append(AppPaths.taskEditor(task))
-                                            }
+                                VStack(spacing: 12) {
+                                    ForEach(tasks) { task in
+                                        TaskRow(task: task) {
+                                            toggleCompletion(for: task)
+                                        } onTap: {
+                                            navPath.append(AppPaths.taskEditor(task))
                                         }
                                     }
                                 }
                             }
                         }
-                        .padding(.bottom, 100)
                     }
+                    .padding(.bottom, 100)
                 }
             }
-            .padding(.horizontal, 20)
         }
+        .padding(.horizontal, 20)
         .navigationTitle(Text("\(showCompleted ? "Completed " : "")Tasks"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -105,11 +101,11 @@ struct TasksListView: View {
                     }) {
                         Image(systemName: "plus")
                             .fontWeight(.bold)
-                            .foregroundColor(.white)
                     }
                 }
             }
         }
+        .background(Color.appBackground)
     }
 
     private func formatSectionTitle(for date: Date?) -> String {

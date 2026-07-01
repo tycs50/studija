@@ -23,7 +23,6 @@ struct TaskRow: View {
 
                             Image(systemName: "checkmark")
                                 .font(.system(size: 11, weight: .bold))
-                                .foregroundColor(.black)
                         }
                     } else {
                         Circle()
@@ -41,15 +40,15 @@ struct TaskRow: View {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(task.title ?? "")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(task.isCompleted ? .white.opacity(0.4) : (isOverdue ? .red : .white))
-                            .strikethrough(task.isCompleted, color: .white.opacity(0.4))
+                            .foregroundColor(task.isCompleted ? .secondary : (isOverdue ? .red : .primary))
+                            .strikethrough(task.isCompleted, color: .secondary)
                             .multilineTextAlignment(.leading)
 
                         if let deadline = task.deadline {
                             Text("\(deadline.formatted(.dateTime.month(.abbreviated).day().year()))")
-                                 // • \(deadline.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits)))")
+                            // • \(deadline.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits)))")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(isOverdue ? .red : .white.opacity(0.4))
+                                .foregroundColor(isOverdue ? .red : .secondary)
                         }
 
                         if let subject = task.subject {
@@ -69,7 +68,7 @@ struct TaskRow: View {
             }
             .buttonStyle(.plain)
         }
-        .modifier(RoundedBackground())
+        .roundedBackground()
     }
 
     private var priorityColor: Color {

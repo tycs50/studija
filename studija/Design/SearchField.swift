@@ -6,22 +6,17 @@ struct SearchField: View {
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(.white.opacity(0.4))
+                .foregroundColor(.secondary)
 
             TextField("Search", text: $searchText)
-                .foregroundColor(.white)
-                .tint(.white)
 
             if !searchText.isEmpty {
                 Button(action: { searchText = "" }) {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.white.opacity(0.4))
+                        .foregroundColor(.secondary)
                 }
             }
         }
-        .padding(.horizontal, 14)
-        .frame(height: 46)
-        .background(Color(white: 0.11))
-        .cornerRadius(12)
+        .modifier(RoundedBackground())
     }
 }

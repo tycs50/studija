@@ -5,7 +5,7 @@ import CoreData
 class ScheduleViewModel {
     var title: String = ""
     var isCurrent: Bool = false
-    let characterLimit = 50
+    let characterLimit = 25
     var schedule: Schedule?
 
     init(schedule: Schedule? = nil, manager: ScheduleManager) {
