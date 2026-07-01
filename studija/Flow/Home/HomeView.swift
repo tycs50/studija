@@ -30,7 +30,7 @@ struct HomeView: View {
                 InfinitePageView(selection: $viewModel.selectedDayIndex) { dayOffset in
                     HomeDayScheduleView(date: viewModel.date(for: dayOffset),
                                         manager: manager,
-                                        allWeeks: Array(allWeeks),
+                                        allWeeks: Array(allWeeks.filter { $0.schedule?.id?.uuidString == manager.selectedScheduleID }),
                                         viewModel: viewModel,
                                         navPath: $navPath)
                 }

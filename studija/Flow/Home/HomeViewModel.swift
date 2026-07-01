@@ -21,8 +21,9 @@ class HomeViewModel {
 
     func activeWeek(for date: Date, manager: ScheduleManager, allWeeks: [Week]) -> Week? {
         guard !allWeeks.isEmpty else { return nil }
+        let filteredWeeks = allWeeks.filter { $0.schedule?.id?.uuidString == manager.selectedScheduleID }
 
-        guard let currentWeekIndex = allWeeks.firstIndex(where: { $0.id?.uuidString == manager.currentWeekID }) else {
+        guard let currentWeekIndex = filteredWeeks.firstIndex(where: { $0.id?.uuidString == manager.currentWeekID }) else {
             return allWeeks.first
         }
 
@@ -32,10 +33,10 @@ class HomeViewModel {
         let weekComponents = calendar.dateComponents([.weekOfYear], from: startOfTodayWeek, to: startOfTargetWeek)
         let weekDifference = weekComponents.weekOfYear ?? 0
 
-        let totalWeeks = allWeeks.count
+        let totalWeeks = filteredWeeks.count
         let targetIndex = (currentWeekIndex + (weekDifference % totalWeeks) + totalWeeks) % totalWeeks
 
-        return allWeeks[targetIndex]
+        return filteredWeeks[targetIndex]
     }
 
     func classes(for date: Date, allWeekSubjects: [WeekSubject], manager: ScheduleManager, allWeeks: [Week]) -> [WeekSubject] {
